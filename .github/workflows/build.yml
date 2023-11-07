@@ -1,0 +1,88 @@
+name: Build and Publish
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build_docker:
+    name: Docker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Get version info
+        id: version_info
+        run: echo ::set-output name=current::$(cat version)
+      - name: Get published version info
+        id: version_info_published
+        run: |
+          TAG="${{ steps.version_info.outputs.current }}"
+          if git show-ref --tags --verify --quiet "refs/tags/${TAG}"; then
+            echo "Version ${TAG} exists"
+
+            echo ::set-output name=new::false
+          else
+            echo "Version ${TAG} does not exist"
+
+            echo ::set-output name=new::true
+          fi
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        name: docker login (ghcr.io)
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: docker build (ghcr.io)
+        run: docker build . -t ghcr.io/domkalan/vscode-tunnel:latest -t ghcr.io/domkalan/vscode-tunnel:${{ steps.version_info.outputs.current }}
+      - name: docker push (ghcr.io)
+        if: steps.version_info_published.outputs.new == 'true'
+        run: docker push ghcr.io/domkalan/vscode-tunnel --all-tags
+      - uses: docker/login-action@v3
+        name: docker login (docker.io)
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      - name: docker build (docker.io)
+        run: docker build . -t domkalan/vscode-tunnel:latest -t domkalan/vscode-tunnel:${{ steps.version_info.outputs.current }}
+      - name: docker push (docker.io)
+        if: steps.version_info_published.outputs.new == 'true'
+        run: docker push domkalan/vscode-tunnel --all-tags
+
+  build_ghrelease:
+    name: Github Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Get version info
+        id: version_info
+        run: echo ::set-output name=current::$(cat version)
+      - name: Get published version info
+        id: version_info_published
+        run: |
+          TAG="${{ steps.version_info.outputs.current }}"
+          if git show-ref --tags --verify --quiet "refs/tags/${TAG}"; then
+            echo "Version ${TAG} exists"
+
+            echo ::set-output name=new::false
+          else
+            echo "Version ${TAG} does not exist"
+
+            echo ::set-output name=new::true
+          fi
+      - name: Create Release
+        if: steps.version_info_published.outputs.new == 'true'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ steps.version_info.outputs.current }}
+          release_name: v${{ steps.version_info.outputs.current }}
+          body: |
+            Published by GitHub Actions
+          draft: false
+          prerelease: false

@@ -1,6 +1,6 @@
 @ECHO OFF
 
-SET IMAGE_NAME=alexanderdna/container-tunnel
+SET IMAGE_NAME=domkalan/vscode-tunnel
 
 docker build -t %IMAGE_NAME% .
 

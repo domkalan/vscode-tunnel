@@ -1,7 +1,7 @@
 @ECHO OFF
 
-SET IMAGE_NAME=alexanderdna/container-tunnel
-SET INSTANCE_NAME=alexanderdna-container-tunnel
+SET IMAGE_NAME=domkalan/vscode-tunnel
+SET INSTANCE_NAME=domkalan/vscode-tunnel
 
 docker start %INSTANCE_NAME% 2>NUL || docker run ^
     --detach ^
