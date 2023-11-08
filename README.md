@@ -1,33 +1,46 @@
 # VSCode-Tunnel
 
-Run a Visual Studio Code Remote Tunnel in a Docker container allowing you to access from remote Visual Studio Code clients.
+Run a Visual Studio Code Remote Tunnel in a Docker container allowing you to access the container remotely from Visual Studio Code.
 
 
 # Getting Started
 
-### Windows
-
-1. Execute `build.bat` to build the Dockerfile.
-2. Execute `run.bat` to run the container if it doesn't exist yet or to start it if it has been created before.
-
-The image's name should be `alexanderdna/container-tunnel`.
-
-The container and volume's name should both be `alexanderdna-container-tunnel`.
-
-You can change the names to whatever you like.
-
-### Linux/MacOS
-
-Coming soon
-
-## Allow connections
-
-When the container is up, open its log in Docker Desktop or in the terminal using the following command:
-
-```
-docker logs -n 50 alexanderdna-container-tunnel
+```bash
+docker run -d --name vscode-tunnel \
+-v /opt/vscode/projects:/home/workspace 
+--network host --restart always --workdir /home/workspace \
+domkalan/vscode-tunnel:latest
 ```
 
-You will see a message from Visual Studio Code Server with the instruction to log into GitHub. Follow the instruction and you will be provided a tunnel name to connect.
+## Register Tunnel
 
-For more details about Remote Tunnel, [visit this page](https://code.visualstudio.com/docs/remote/tunnels).
+Once the container is running, you will need to register the tunnel to your GitHub account. View the logs from tunnel to view the steps on how to register.
+
+```bash
+docker logs vscode-tunnel
+```
+
+You should see something like this in your terminal.
+
+```text
+*
+* Visual Studio Code Server
+*
+* By using the software, you agree to
+* the Visual Studio Code Server License Terms (https://aka.ms/vscode-server-license) and
+* the Microsoft Privacy Statement (https://privacy.microsoft.com/en-US/privacystatement).
+*
+
+[2023-11-07 23:53:58] info Using Github for authentication, run `code tunnel user login --provider <provider>` option to change this.
+To grant access to the server, please log into https://github.com/login/device and use code XXXX-0000
+[2023-11-07 23:56:56] info Creating tunnel with the name: vscode-tunnel
+
+```
+
+Find your grant code from the logs and go to the [GitHub Device Link](https://github.com/login/device) page, provide the token, then your tunnel is now registered.
+
+## Additional Information
+
+[VSCode Remote Tunnel Docs](https://code.visualstudio.com/docs/remote/tunnels)
+
+[Docker Volumes](https://docs.docker.com/storage/volumes/)
