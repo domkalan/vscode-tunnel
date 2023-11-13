@@ -7,6 +7,10 @@ RUN apt-get update && \
     curl -sL "https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64" \
         --output /tmp/vscode-cli.tar.gz && \
     tar -xf /tmp/vscode-cli.tar.gz -C /usr/bin && \
-    rm /tmp/vscode-cli.tar.gz
+    rm /tmp/vscode-cli.tar.gz && \
+    useradd -ms /bin/bash workspace
+
+USER workspace
+WORKDIR /home/workspace
 
 CMD [ "code", "tunnel", "--accept-server-license-terms" ]
