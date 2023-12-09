@@ -55,6 +55,7 @@ jobs:
           docker push ghcr.io/domkalan/vscode-tunnel:devpack --all-tags
 
   build_ghrelease:
+    needs: build_docker # let docker build finish before pushing new release
     name: Github Release
     runs-on: ubuntu-latest
     steps:
