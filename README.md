@@ -1,5 +1,7 @@
 # VSCode-Tunnel
 
+[![GitHub license](https://img.shields.io/github/license/domkalan/vscode-tunnel.svg)](https://github.com/domkalan/vscode-tunnel/blob/master/LICENSE) [![GitHub release](https://img.shields.io/github/release/domkalan/vscode-tunnel.svg)](https://GitHub.com/domkalan/vscode-tunnel/releases/) [![GitHub Actions](https://github.com/domkalan/vscode-tunnel/actions/workflows/build.yml/badge.svg)](https://github.com/domkalan/vscode-tunnel/actions/)
+
 Run a Visual Studio Code Remote Tunnel in a Docker container allowing you to access the container remotely from Visual Studio Code. This container is based on Debian Bookworm, the current version of Debian as of writing (2023).
 
 
