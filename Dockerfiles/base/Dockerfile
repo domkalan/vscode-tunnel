@@ -1,7 +1,8 @@
 FROM debian:bookworm
 
+
 RUN apt-get update && \
-    apt-get install -y git curl && \
+    apt-get install -y git curl sudo && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     curl -sL "https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64" \
@@ -10,7 +11,5 @@ RUN apt-get update && \
     rm /tmp/vscode-cli.tar.gz && \
     useradd -ms /bin/bash workspace
 
-USER workspace
-WORKDIR /home/workspace
 
-CMD [ "code", "tunnel", "--accept-server-license-terms" ]
+CMD bash
