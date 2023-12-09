@@ -7,7 +7,7 @@ Run a Visual Studio Code Remote Tunnel in a Docker container allowing you to acc
 
 ```bash
 docker run -d --name vscode-tunnel \
--v /opt/vscode/projects:/home/workspace 
+-v /opt/vscode/projects:/home/workspace \
 --network host --restart always --workdir /home/workspace \
 domkalan/vscode-tunnel:latest
 ```

@@ -9,7 +9,9 @@ RUN apt-get update && \
         --output /tmp/vscode-cli.tar.gz && \
     tar -xf /tmp/vscode-cli.tar.gz -C /usr/bin && \
     rm /tmp/vscode-cli.tar.gz && \
-    useradd -ms /bin/bash workspace
+    useradd -ms /bin/bash workspace && \
+    adduser workspace sudo && \
+    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 
 CMD bash
