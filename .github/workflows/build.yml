@@ -42,17 +42,27 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
       - name: docker build
         run: |
-          cd Dockerfiles/base && docker build . -t domkalan/vscode-tunnel:base && cd $GITHUB_WORKSPACE
+          cd Dockerfiles/base && docker build . -t domkalan/vscode-tunnel:base -t domkalan/vscode-tunnel:base-${{ steps.version_info.outputs.current }} -t ghcr.io/domkalan/vscode-tunnel:base -t ghcr.io/domkalan/vscode-tunnel:base-${{ steps.version_info.outputs.current }} && cd $GITHUB_WORKSPACE
           cd Dockerfiles/standalone && docker build . -t ghcr.io/domkalan/vscode-tunnel:latest -t ghcr.io/domkalan/vscode-tunnel:standalone -t ghcr.io/domkalan/vscode-tunnel:standalone-${{ steps.version_info.outputs.current }} -t domkalan/vscode-tunnel:latest -t domkalan/vscode-tunnel:standalone -t domkalan/vscode-tunnel:standalone-${{ steps.version_info.outputs.current }} && cd $GITHUB_WORKSPACE
           cd Dockerfiles/devpack && docker build . -t ghcr.io/domkalan/vscode-tunnel:devpack -t ghcr.io/domkalan/vscode-tunnel:devpack-${{ steps.version_info.outputs.current }} -t domkalan/vscode-tunnel:devpack -t domkalan/vscode-tunnel:devpack-${{ steps.version_info.outputs.current }} && cd $GITHUB_WORKSPACE
       - name: docker push
         if: steps.version_info_published.outputs.new == 'true'
         run: |
-          docker push domkalan/vscode-tunnel:latest --all-tags
-          docker push domkalan/vscode-tunnel:devpack --all-tags
+          docker push domkalan/vscode-tunnel:base
+          docker push domkalan/vscode-tunnel:base-${{ steps.version_info.outputs.current }}
+          docker push domkalan/vscode-tunnel:latest
+          docker push domkalan/vscode-tunnel:standalone
+          docker push domkalan/vscode-tunnel:standalone-${{ steps.version_info.outputs.current }}
+          docker push domkalan/vscode-tunnel:devpack
+          docker push domkalan/vscode-tunnel:devpack-${{ steps.version_info.outputs.current }}
 
-          docker push ghcr.io/domkalan/vscode-tunnel:latest --all-tags
-          docker push ghcr.io/domkalan/vscode-tunnel:devpack --all-tags
+          docker push ghcr.io/domkalan/vscode-tunnel:base
+          docker push ghcr.io/domkalan/vscode-tunnel:base-${{ steps.version_info.outputs.current }}
+          docker push ghcr.io/domkalan/vscode-tunnel:latest
+          docker push ghcr.io/domkalan/vscode-tunnel:standalone
+          docker push ghcr.io/domkalan/vscode-tunnel:standalone-${{ steps.version_info.outputs.current }}
+          docker push ghcr.io/domkalan/vscode-tunnel:devpack
+          docker push ghcr.io/domkalan/vscode-tunnel:devpack-${{ steps.version_info.outputs.current }}
 
   build_ghrelease:
     needs: build_docker # let docker build finish before pushing new release
