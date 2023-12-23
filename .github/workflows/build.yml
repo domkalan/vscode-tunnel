@@ -63,6 +63,7 @@ jobs:
           docker push ghcr.io/domkalan/vscode-tunnel:standalone-${{ steps.version_info.outputs.current }}
           docker push ghcr.io/domkalan/vscode-tunnel:devpack
           docker push ghcr.io/domkalan/vscode-tunnel:devpack-${{ steps.version_info.outputs.current }}
+
   build_docker_fedora:
     name: Docker (Fedora)
     runs-on: ubuntu-latest
@@ -121,11 +122,69 @@ jobs:
           docker push ghcr.io/domkalan/vscode-tunnel:devpack-fedora
           docker push ghcr.io/domkalan/vscode-tunnel:devpack-fedora-${{ steps.version_info.outputs.current }}
 
+  build_docker_alpine:
+    name: Docker (Alpine)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Get version info
+        id: version_info
+        run: echo ::set-output name=current::$(cat version)
+      - name: Get published version info
+        id: version_info_published
+        run: |
+          TAG="${{ steps.version_info.outputs.current }}"
+          if git show-ref --tags --verify --quiet "refs/tags/${TAG}"; then
+            echo "Version ${TAG} exists"
+
+            echo ::set-output name=new::false
+          else
+            echo "Version ${TAG} does not exist"
+
+            echo ::set-output name=new::true
+          fi
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        name: docker login (ghcr.io)
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/login-action@v3
+        name: docker login (docker.io)
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      - name: docker build
+        run: |
+          cd Dockerfiles/alpine/base && docker build . -t domkalan/vscode-tunnel:base-alpine -t domkalan/vscode-tunnel:base-alpine-${{ steps.version_info.outputs.current }} -t ghcr.io/domkalan/vscode-tunnel:base-alpine -t ghcr.io/domkalan/vscode-tunnel:base-alpine-${{ steps.version_info.outputs.current }} && cd $GITHUB_WORKSPACE
+          cd Dockerfiles/alpine/standalone && docker build . -t ghcr.io/domkalan/vscode-tunnel:standalone-alpine -t ghcr.io/domkalan/vscode-tunnel:standalone-alpine-${{ steps.version_info.outputs.current }} -t domkalan/vscode-tunnel:standalone-alpine -t domkalan/vscode-tunnel:standalone-alpine-${{ steps.version_info.outputs.current }} && cd $GITHUB_WORKSPACE
+          cd Dockerfiles/alpine/devpack && docker build . -t ghcr.io/domkalan/vscode-tunnel:devpack-alpine -t ghcr.io/domkalan/vscode-tunnel:devpack-alpine-${{ steps.version_info.outputs.current }} -t domkalan/vscode-tunnel:devpack-alpine -t domkalan/vscode-tunnel:devpack-alpine-${{ steps.version_info.outputs.current }} && cd $GITHUB_WORKSPACE
+      - name: docker push
+        if: steps.version_info_published.outputs.new == 'true'
+        run: |
+          docker push domkalan/vscode-tunnel:base-alpine
+          docker push domkalan/vscode-tunnel:base-alpine-${{ steps.version_info.outputs.current }}
+          docker push domkalan/vscode-tunnel:standalone-alpine
+          docker push domkalan/vscode-tunnel:standalone-alpine-${{ steps.version_info.outputs.current }}
+          docker push domkalan/vscode-tunnel:devpack-alpine
+          docker push domkalan/vscode-tunnel:devpack-alpine-${{ steps.version_info.outputs.current }}
+
+          docker push ghcr.io/domkalan/vscode-tunnel:base-alpine
+          docker push ghcr.io/domkalan/vscode-tunnel:base-alpine-${{ steps.version_info.outputs.current }}
+          docker push ghcr.io/domkalan/vscode-tunnel:standalone-alpine
+          docker push ghcr.io/domkalan/vscode-tunnel:standalone-alpine-${{ steps.version_info.outputs.current }}
+          docker push ghcr.io/domkalan/vscode-tunnel:devpack-alpine
+          docker push ghcr.io/domkalan/vscode-tunnel:devpack-alpine-${{ steps.version_info.outputs.current }}
+
   build_ghrelease:
     needs: build_docker # let docker build finish before pushing new release
     name: Github Release
     runs-on: ubuntu-latest
-    needs: [build_docker_debian, build_docker_fedora]
+    needs: [build_docker_debian, build_docker_fedora, build_docker_alpine]
     steps:
       - uses: actions/checkout@v4
         with:
