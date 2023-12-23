@@ -16,10 +16,12 @@ domkalan/vscode-tunnel:latest
 
 ## Tags
 Multiple image tags are published for minimal and packaged developer enviroments. By default `standalone` is tagged as latest.
-| Tag | Base OS |Packages |
+| Tag | Base OS | Packages |
 | -- | -- | -- |
 | `standalone` | Debian Bookworm | `apt sudo` |
-| `devpack` | Debian Bookworm | `apt sudo nodejs npm typescript eslint python3 python3-virtualenv php8.2 composer mono-complete openjdk-17-jdk maven gradel golang rustc cargo lua5.4 perl ruby docker.io` |
+| `devpack` | Debian Bookworm | `apt sudo nodejs build-essential npm typescript eslint python3 python3-virtualenv php8.2 composer mono-complete openjdk-17-jdk maven gradel golang rustc cargo lua5.4 perl ruby docker.io` |
+| `standalone-fedora` | Fedora Rawhide | `dnf sudo` |
+| `devpack-fedora` | Fedora Rawhide | `dnf sudo groupinstall("Development Tools") groupinstall("Development Libraries") nodejs npm typescript eslint python3 python3-virtualenv php8.2 composer mono-complete openjdk-17-jdk maven golang rustc cargo lua5.4 perl ruby docker` |
 
 ## Register Tunnel
 

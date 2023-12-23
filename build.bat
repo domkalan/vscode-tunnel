@@ -2,7 +2,7 @@
 
 SET IMAGE_NAME=domkalan/vscode-tunnel
 
-cd Dockerfiles\standalone
+cd Dockerfiles\debian\standalone
 
 docker build -t %IMAGE_NAME% .
 
