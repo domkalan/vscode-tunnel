@@ -181,10 +181,9 @@ jobs:
           docker push ghcr.io/domkalan/vscode-tunnel:devpack-alpine-${{ steps.version_info.outputs.current }}
 
   build_ghrelease:
-    needs: build_docker # let docker build finish before pushing new release
+    needs: [build_docker_debian, build_docker_fedora, build_docker_alpine]
     name: Github Release
     runs-on: ubuntu-latest
-    needs: [build_docker_debian, build_docker_fedora, build_docker_alpine]
     steps:
       - uses: actions/checkout@v4
         with:
