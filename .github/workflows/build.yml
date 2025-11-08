@@ -1,8 +1,10 @@
-name: Build and Publish
+name: Build
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    # Runs at 00:00 (midnight) on the first day of every month
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+
 jobs:
   build_docker_debian:
     name: Docker (Debian)
@@ -13,7 +15,7 @@ jobs:
           fetch-depth: 0
       - name: Get version info
         id: version_info
-        run: echo ::set-output name=current::$(cat version)
+        run: echo ::set-output name=current::$(date +%Y%m%d)
       - name: Get published version info
         id: version_info_published
         run: |
@@ -42,27 +44,13 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
       - name: docker build
         run: |
-          cd Dockerfiles/debian/base && docker build . -t domkalan/vscode-tunnel:base -t domkalan/vscode-tunnel:base-${{ steps.version_info.outputs.current }} -t ghcr.io/domkalan/vscode-tunnel:base -t ghcr.io/domkalan/vscode-tunnel:base-${{ steps.version_info.outputs.current }} && cd $GITHUB_WORKSPACE
-          cd Dockerfiles/debian/standalone && docker build . -t ghcr.io/domkalan/vscode-tunnel:latest -t ghcr.io/domkalan/vscode-tunnel:standalone -t ghcr.io/domkalan/vscode-tunnel:standalone-${{ steps.version_info.outputs.current }} -t domkalan/vscode-tunnel:latest -t domkalan/vscode-tunnel:standalone -t domkalan/vscode-tunnel:standalone-${{ steps.version_info.outputs.current }} && cd $GITHUB_WORKSPACE
-          cd Dockerfiles/debian/devpack && docker build . -t ghcr.io/domkalan/vscode-tunnel:devpack -t ghcr.io/domkalan/vscode-tunnel:devpack-${{ steps.version_info.outputs.current }} -t domkalan/vscode-tunnel:devpack -t domkalan/vscode-tunnel:devpack-${{ steps.version_info.outputs.current }} && cd $GITHUB_WORKSPACE
+          cd Dockerfiles/debian/base && docker build . -t domkalan/vscode-tunnel:latest domkalan/vscode-tunnel:debian -t domkalan/vscode-tunnel:debian-${{ steps.version_info.outputs.current }}
       - name: docker push
         if: steps.version_info_published.outputs.new == 'true'
         run: |
-          docker push domkalan/vscode-tunnel:base
-          docker push domkalan/vscode-tunnel:base-${{ steps.version_info.outputs.current }}
-          docker push domkalan/vscode-tunnel:latest
-          docker push domkalan/vscode-tunnel:standalone
-          docker push domkalan/vscode-tunnel:standalone-${{ steps.version_info.outputs.current }}
-          docker push domkalan/vscode-tunnel:devpack
-          docker push domkalan/vscode-tunnel:devpack-${{ steps.version_info.outputs.current }}
+          docker push domkalan/vscode-tunnel:debian --all-tags
 
-          docker push ghcr.io/domkalan/vscode-tunnel:base
-          docker push ghcr.io/domkalan/vscode-tunnel:base-${{ steps.version_info.outputs.current }}
-          docker push ghcr.io/domkalan/vscode-tunnel:latest
-          docker push ghcr.io/domkalan/vscode-tunnel:standalone
-          docker push ghcr.io/domkalan/vscode-tunnel:standalone-${{ steps.version_info.outputs.current }}
-          docker push ghcr.io/domkalan/vscode-tunnel:devpack
-          docker push ghcr.io/domkalan/vscode-tunnel:devpack-${{ steps.version_info.outputs.current }}
+          docker push ghcr.io/domkalan/vscode-tunnel:debian --all-tags
 
   build_docker_fedora:
     name: Docker (Fedora)
@@ -73,7 +61,7 @@ jobs:
           fetch-depth: 0
       - name: Get version info
         id: version_info
-        run: echo ::set-output name=current::$(cat version)
+        run: echo ::set-output name=current::$(date +%Y%m%d)
       - name: Get published version info
         id: version_info_published
         run: |
@@ -102,25 +90,13 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
       - name: docker build
         run: |
-          cd Dockerfiles/fedora/base && docker build . -t domkalan/vscode-tunnel:base-fedora -t domkalan/vscode-tunnel:base-fedora-${{ steps.version_info.outputs.current }} -t ghcr.io/domkalan/vscode-tunnel:base-fedora -t ghcr.io/domkalan/vscode-tunnel:base-fedora-${{ steps.version_info.outputs.current }} && cd $GITHUB_WORKSPACE
-          cd Dockerfiles/fedora/standalone && docker build . -t ghcr.io/domkalan/vscode-tunnel:standalone-fedora -t ghcr.io/domkalan/vscode-tunnel:standalone-fedora-${{ steps.version_info.outputs.current }} -t domkalan/vscode-tunnel:standalone-fedora -t domkalan/vscode-tunnel:standalone-fedora-${{ steps.version_info.outputs.current }} && cd $GITHUB_WORKSPACE
-          cd Dockerfiles/fedora/devpack && docker build . -t ghcr.io/domkalan/vscode-tunnel:devpack-fedora -t ghcr.io/domkalan/vscode-tunnel:devpack-fedora-${{ steps.version_info.outputs.current }} -t domkalan/vscode-tunnel:devpack-fedora -t domkalan/vscode-tunnel:devpack-fedora-${{ steps.version_info.outputs.current }} && cd $GITHUB_WORKSPACE
+          cd Dockerfiles/fedora && docker build . -t domkalan/vscode-tunnel:fedora -t domkalan/vscode-tunnel:fedora-${{ steps.version_info.outputs.current }}
       - name: docker push
         if: steps.version_info_published.outputs.new == 'true'
         run: |
-          docker push domkalan/vscode-tunnel:base-fedora
-          docker push domkalan/vscode-tunnel:base-fedora-${{ steps.version_info.outputs.current }}
-          docker push domkalan/vscode-tunnel:standalone-fedora
-          docker push domkalan/vscode-tunnel:standalone-fedora-${{ steps.version_info.outputs.current }}
-          docker push domkalan/vscode-tunnel:devpack-fedora
-          docker push domkalan/vscode-tunnel:devpack-fedora-${{ steps.version_info.outputs.current }}
+          docker push domkalan/vscode-tunnel:fedora --all-tags
 
-          docker push ghcr.io/domkalan/vscode-tunnel:base-fedora
-          docker push ghcr.io/domkalan/vscode-tunnel:base-fedora-${{ steps.version_info.outputs.current }}
-          docker push ghcr.io/domkalan/vscode-tunnel:standalone-fedora
-          docker push ghcr.io/domkalan/vscode-tunnel:standalone-fedora-${{ steps.version_info.outputs.current }}
-          docker push ghcr.io/domkalan/vscode-tunnel:devpack-fedora
-          docker push ghcr.io/domkalan/vscode-tunnel:devpack-fedora-${{ steps.version_info.outputs.current }}
+          docker push ghcr.io/domkalan/vscode-tunnel:fedora --all-tags
 
   build_docker_alpine:
     name: Docker (Alpine)
@@ -131,7 +107,7 @@ jobs:
           fetch-depth: 0
       - name: Get version info
         id: version_info
-        run: echo ::set-output name=current::$(cat version)
+        run: echo ::set-output name=current::$(date +%Y%m%d)
       - name: Get published version info
         id: version_info_published
         run: |
@@ -160,25 +136,13 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
       - name: docker build
         run: |
-          cd Dockerfiles/alpine/base && docker build . -t domkalan/vscode-tunnel:base-alpine -t domkalan/vscode-tunnel:base-alpine-${{ steps.version_info.outputs.current }} -t ghcr.io/domkalan/vscode-tunnel:base-alpine -t ghcr.io/domkalan/vscode-tunnel:base-alpine-${{ steps.version_info.outputs.current }} && cd $GITHUB_WORKSPACE
-          cd Dockerfiles/alpine/standalone && docker build . -t ghcr.io/domkalan/vscode-tunnel:standalone-alpine -t ghcr.io/domkalan/vscode-tunnel:standalone-alpine-${{ steps.version_info.outputs.current }} -t domkalan/vscode-tunnel:standalone-alpine -t domkalan/vscode-tunnel:standalone-alpine-${{ steps.version_info.outputs.current }} && cd $GITHUB_WORKSPACE
-          cd Dockerfiles/alpine/devpack && docker build . -t ghcr.io/domkalan/vscode-tunnel:devpack-alpine -t ghcr.io/domkalan/vscode-tunnel:devpack-alpine-${{ steps.version_info.outputs.current }} -t domkalan/vscode-tunnel:devpack-alpine -t domkalan/vscode-tunnel:devpack-alpine-${{ steps.version_info.outputs.current }} && cd $GITHUB_WORKSPACE
+          cd Dockerfiles/alpine && docker build . -t domkalan/vscode-tunnel:alpine -t domkalan/vscode-tunnel:alpine-${{ steps.version_info.outputs.current }}
       - name: docker push
         if: steps.version_info_published.outputs.new == 'true'
         run: |
-          docker push domkalan/vscode-tunnel:base-alpine
-          docker push domkalan/vscode-tunnel:base-alpine-${{ steps.version_info.outputs.current }}
-          docker push domkalan/vscode-tunnel:standalone-alpine
-          docker push domkalan/vscode-tunnel:standalone-alpine-${{ steps.version_info.outputs.current }}
-          docker push domkalan/vscode-tunnel:devpack-alpine
-          docker push domkalan/vscode-tunnel:devpack-alpine-${{ steps.version_info.outputs.current }}
+          docker push domkalan/vscode-tunnel:alpine --all-tags
 
-          docker push ghcr.io/domkalan/vscode-tunnel:base-alpine
-          docker push ghcr.io/domkalan/vscode-tunnel:base-alpine-${{ steps.version_info.outputs.current }}
-          docker push ghcr.io/domkalan/vscode-tunnel:standalone-alpine
-          docker push ghcr.io/domkalan/vscode-tunnel:standalone-alpine-${{ steps.version_info.outputs.current }}
-          docker push ghcr.io/domkalan/vscode-tunnel:devpack-alpine
-          docker push ghcr.io/domkalan/vscode-tunnel:devpack-alpine-${{ steps.version_info.outputs.current }}
+          docker push ghcr.io/domkalan/vscode-tunnel:alpine --all-tags
 
   build_ghrelease:
     needs: [build_docker_debian, build_docker_fedora, build_docker_alpine]
@@ -190,7 +154,7 @@ jobs:
           fetch-depth: 0
       - name: Get version info
         id: version_info
-        run: echo ::set-output name=current::$(cat version)
+        run: echo ::set-output name=current::$(date +%Y%m%d)
       - name: Get published version info
         id: version_info_published
         run: |
