@@ -44,7 +44,7 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
       - name: docker build
         run: |
-          cd Dockerfiles/debian/base && docker build . -t domkalan/vscode-tunnel:latest domkalan/vscode-tunnel:debian -t domkalan/vscode-tunnel:debian-${{ steps.version_info.outputs.current }}
+          cd Dockerfiles/debian && docker build . -t domkalan/vscode-tunnel:latest domkalan/vscode-tunnel:debian -t domkalan/vscode-tunnel:debian-${{ steps.version_info.outputs.current }}
       - name: docker push
         if: steps.version_info_published.outputs.new == 'true'
         run: |
