@@ -48,9 +48,13 @@ jobs:
       - name: docker push
         if: steps.version_info_published.outputs.new == 'true'
         run: |
-          docker push domkalan/vscode-tunnel:debian --all-tags
+          docker push domkalan/vscode-tunnel:latest
 
-          docker push ghcr.io/domkalan/vscode-tunnel:debian --all-tags
+          docker push domkalan/vscode-tunnel:debian
+          docker push domkalan/vscode-tunnel:debian-${{ steps.version_info.outputs.current }}
+
+          docker push ghcr.io/domkalan/vscode-tunnel:debian
+          docker push ghcr.io/domkalan/vscode-tunnel:debian-${{ steps.version_info.outputs.current }}
 
   build_docker_fedora:
     name: Docker (Fedora)
@@ -94,9 +98,11 @@ jobs:
       - name: docker push
         if: steps.version_info_published.outputs.new == 'true'
         run: |
-          docker push domkalan/vscode-tunnel:fedora --all-tags
+          docker push domkalan/vscode-tunnel:fedora
+          docker push domkalan/vscode-tunnel:fedora-${{ steps.version_info.outputs.current }}
 
-          docker push ghcr.io/domkalan/vscode-tunnel:fedora --all-tags
+          docker push ghcr.io/domkalan/vscode-tunnel:fedora
+          docker push ghcr.io/domkalan/vscode-tunnel:fedora-${{ steps.version_info.outputs.current }}
 
   build_docker_alpine:
     name: Docker (Alpine)
@@ -140,9 +146,11 @@ jobs:
       - name: docker push
         if: steps.version_info_published.outputs.new == 'true'
         run: |
-          docker push domkalan/vscode-tunnel:alpine --all-tags
+          docker push domkalan/vscode-tunnel:alpine
+          docker push domkalan/vscode-tunnel:alpine-${{ steps.version_info.outputs.current }}
 
-          docker push ghcr.io/domkalan/vscode-tunnel:alpine --all-tags
+          docker push ghcr.io/domkalan/vscode-tunnel:alpine
+          docker push ghcr.io/domkalan/vscode-tunnel:alpine-${{ steps.version_info.outputs.current }}
 
   build_ghrelease:
     needs: [build_docker_debian, build_docker_fedora, build_docker_alpine]
