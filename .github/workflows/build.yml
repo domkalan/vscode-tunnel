@@ -152,8 +152,56 @@ jobs:
           docker push ghcr.io/domkalan/vscode-tunnel:alpine
           docker push ghcr.io/domkalan/vscode-tunnel:alpine-${{ steps.version_info.outputs.current }}
 
+  build_docker_ubuntu:
+    name: Docker (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Get version info
+        id: version_info
+        run: echo ::set-output name=current::$(date +%Y%m%d)
+      - name: Get published version info
+        id: version_info_published
+        run: |
+          TAG="${{ steps.version_info.outputs.current }}"
+          if git show-ref --tags --verify --quiet "refs/tags/${TAG}"; then
+            echo "Version ${TAG} exists"
+
+            echo ::set-output name=new::false
+          else
+            echo "Version ${TAG} does not exist"
+
+            echo ::set-output name=new::true
+          fi
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        name: docker login (ghcr.io)
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/login-action@v3
+        name: docker login (docker.io)
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      - name: docker build
+        run: |
+          cd Dockerfiles/ubuntu && docker build . -t domkalan/vscode-tunnel:ubuntu -t domkalan/vscode-tunnel:ubuntu-${{ steps.version_info.outputs.current }} -t ghcr.io/domkalan/vscode-tunnel:ubuntu -t ghcr.io/domkalan/vscode-tunnel:ubuntu-${{ steps.version_info.outputs.current }}
+      - name: docker push
+        if: steps.version_info_published.outputs.new == 'true'
+        run: |
+          docker push domkalan/vscode-tunnel:ubuntu
+          docker push domkalan/vscode-tunnel:ubuntu-${{ steps.version_info.outputs.current }}
+
+          docker push ghcr.io/domkalan/vscode-tunnel:ubuntu
+          docker push ghcr.io/domkalan/vscode-tunnel:ubuntu-${{ steps.version_info.outputs.current }}
+
   build_ghrelease:
-    needs: [build_docker_debian, build_docker_fedora, build_docker_alpine]
+    needs: [build_docker_debian, build_docker_fedora, build_docker_alpine, build_docker_ubuntu]
     name: Github Release
     runs-on: ubuntu-latest
     steps:
