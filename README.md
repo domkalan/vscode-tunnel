@@ -5,7 +5,7 @@
 Run a Visual Studio Code Remote Tunnel in a Docker container allowing you to access the container remotely from Visual Studio Code. This container is based on Debian Bookworm, the current version of Debian as of writing (2023).
 
 
-# Getting Started
+## Getting Started
 
 ```bash
 docker run -d --name vscode-tunnel \
@@ -14,23 +14,22 @@ docker run -d --name vscode-tunnel \
 domkalan/vscode-tunnel:latest
 ```
 
-## Tags
-Multiple image tags are published for minimal and packaged developer enviroments. By default `standalone` is tagged as latest.
-| Tag | Base OS | Packages |
-| -- | -- | -- |
-| `standalone` | Debian Bookworm | `apt sudo` |
-| `devpack` | Debian Bookworm | `apt sudo nodejs build-essential npm typescript eslint python3 python3-virtualenv php8.2 composer mono-complete openjdk-17-jdk maven gradel golang rustc cargo lua5.4 perl ruby docker.io` |
-| `standalone-fedora` | Fedora Rawhide | `dnf sudo` |
-| `devpack-fedora` | Fedora Rawhide | `dnf sudo groupinstall("Development Tools") groupinstall("Development Libraries") nodejs npm typescript eslint python3 python3-virtualenv php8.2 composer mono-complete openjdk-17-jdk maven golang rustc cargo lua perl ruby docker` |
-| `standalone-alpine` | Alpine Edge | `apk sudo` |
-| `devpack-alpine` | Alpine Edge | `apk sudo alpine-sdk nodejs npm typescript eslint python3 python3-virtualenv php8.2 composer openjdk-17-jdk maven go rust cargo lua perl ruby docker` |
+An image is also published to ghcr.io as an alternative for those who do not use Docker hub.
+
+## Images
+Multiple Linux Distros are published automatically. Images are updated monthly and are tagged with the current date. For example, December 1st 2025 will be `debian-20251201`. By default, debian is tagged as the `latest` image. 
+The available distros are:
+* Debian - `debian`, `latest`
+* Ubuntu - `ubuntu`
+* Fedora - `fedora`
+* Alpine - `alpine`
 
 ## Register Tunnel
 
 Once the container is running, you will need to register the tunnel to your GitHub account. View the logs from tunnel to view the steps on how to register.
 
 ```bash
-docker logs vscode-tunnel
+docker logs -f vscode-tunnel
 ```
 
 You should see something like this in your terminal.
