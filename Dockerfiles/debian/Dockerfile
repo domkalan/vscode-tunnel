@@ -14,4 +14,4 @@ RUN apt-get update && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 
-CMD bash
+CMD [ "code", "tunnel", "--accept-server-license-terms" ]
