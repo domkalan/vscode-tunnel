@@ -1,4 +1,4 @@
-FROM fedora:rawhide
+FROM fedora:latest
 
 
 RUN dnf install -y git curl sudo && \
@@ -13,4 +13,4 @@ RUN dnf install -y git curl sudo && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 
-CMD bash
+CMD [ "code", "tunnel", "--accept-server-license-terms" ]

@@ -1,4 +1,4 @@
-FROM alpine:edge
+FROM alpine:latest
 
 
 RUN apk add git curl sudo bash && \
@@ -13,4 +13,4 @@ RUN apk add git curl sudo bash && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 
-CMD bash
+CMD [ "code", "tunnel", "--accept-server-license-terms" ]
