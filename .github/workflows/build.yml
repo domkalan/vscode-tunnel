@@ -2,7 +2,7 @@ name: Build
 on:
   schedule:
     # Runs at 00:00 (midnight) on the first day of every month
-    - cron: '0 0 1 * *'
+    - cron: '0 0 1 */6 *'
   workflow_dispatch:
 
 jobs:
