@@ -1,4 +1,6 @@
-# VSCode-Tunnel
+# ⛔️ DEPRECATED: VSCode-Tunnel
+
+>  ⚠️ **This repository is no longer actively maintained or updated.** It has been deprecated in favor of the builtin **[VSCode Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).**
 
 [![GitHub license](https://img.shields.io/github/license/domkalan/vscode-tunnel.svg)](https://github.com/domkalan/vscode-tunnel/blob/master/LICENSE) [![GitHub release](https://img.shields.io/github/release/domkalan/vscode-tunnel.svg)](https://GitHub.com/domkalan/vscode-tunnel/releases/) [![GitHub Actions](https://github.com/domkalan/vscode-tunnel/actions/workflows/build.yml/badge.svg)](https://github.com/domkalan/vscode-tunnel/actions/)
 
